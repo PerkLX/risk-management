@@ -64,12 +64,18 @@ annotate service.Risks with @(
                     ID : 'MitigationDetails',
                     Target : '@UI.FieldGroup#MitigationDetails',
                 },],
-        },],
+        },
+        ],
     UI.LineItem : [
         {
             $Type : 'UI.DataField',
             Label : '{i18n>Title}',
             Value : title,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : miti.descr,
+            Label : '{i18n>Mitigation}',
         },
         {
             $Type : 'UI.DataField',
@@ -80,16 +86,13 @@ annotate service.Risks with @(
             $Type : 'UI.DataField',
             Label : '{i18n>Priority}',
             Value : prio_code,
+            Criticality : PrioCriticality,
         },
         {
             $Type : 'UI.DataField',
             Label : '{i18n>Impact}',
             Value : impact,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : miti.descr,
-            Label : '{i18n>Mitigation}',
+            Criticality : criticality,
         },
     ],
 );
@@ -163,10 +166,12 @@ annotate service.Risks with @(
             },{
                 $Type : 'UI.DataField',
                 Value : prio_code,
+                Criticality : PrioCriticality,
             },{
                 $Type : 'UI.DataField',
                 Value : impact,
                 Label : '{i18n>Impact}',
+                Criticality : criticality,
             },],
     }
 );
@@ -186,7 +191,8 @@ annotate service.Risks with @(
                 $Type : 'UI.DataField',
                 Value : miti.timeline,
                 Label : '{i18n>Timeline}',
-            },],
+            },
+            ],
     }
 );
 annotate service.Risks with {
@@ -201,9 +207,16 @@ annotate service.Risks with {
 annotate service.Mitigations with {
     ID @Common.Text : descr
 };
+
 annotate service.Mitigations with {
     owner @Common.FieldControl : #ReadOnly
 };
 annotate service.Mitigations with {
     timeline @Common.FieldControl : #ReadOnly
+};
+annotate service.Risks with {
+    prio @Common.Text : {
+            $value : prio.descr,
+            ![@UI.TextArrangement] : #TextOnly,
+        }
 };

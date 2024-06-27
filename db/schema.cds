@@ -9,10 +9,10 @@ using {
 } from '@sap/cds/common';
 
 entity Risks : cuid, managed {
-        title                    : String(100);
-        owner                    : String;
+        title                    : localized String(100);
+        owner                    : localized String;
         prio                     : Association to Priority;
-        descr                    : String;
+        descr                    : localized String;
         miti                     : Association to Mitigations;
         impact                   : Integer;
         // bp : Association to BusinessPartners;
@@ -34,4 +34,10 @@ entity Priority : CodeList {
                     medium = 'M';
                     low    = 'L';
             };
+}
+
+entity Items : cuid {
+        title           : String;
+        descr           : String;
+        quantity        : Integer;   
 }

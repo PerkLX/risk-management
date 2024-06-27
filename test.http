@@ -1,0 +1,14 @@
+
+###
+POST  http://localhost:40437/odata/v4/service/risk/addItem
+Content-Type: application/json
+
+{
+    "title": "test",
+    "descr": "qwe",
+    "quantity": 19
+}
+
+###
+GET http://localhost:40437/odata/v4/service/risk/getByQuantity(quantity=19)
+Content-Type: application/json
