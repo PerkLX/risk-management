@@ -17,6 +17,7 @@ service RiskService {
 
     function getByQuantity(quantity: Integer) returns many Items; 
     action addItem(title: String, descr: String, quantity: Integer);
-    // BusinessPartner will be used later
-    //@readonly entity BusinessPartners as projection on rm.BusinessPartners;
+    
+    //BusinessPartner will be used later
+    @readonly entity BusinessPartners as projection on rm.BusinessPartners;
 }

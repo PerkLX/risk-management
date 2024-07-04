@@ -8,6 +8,13 @@ using {
         sap.common.CodeList
 } from '@sap/cds/common';
 
+using { API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER.csn';
+
+entity BusinessPartners as projection on bupa.A_BusinessPartner {
+   key BusinessPartner,
+   BusinessPartnerFullName as FullName,
+}
+
 entity Risks : cuid, managed {
         title                    : localized String(100);
         owner                    : localized String;
@@ -15,7 +22,7 @@ entity Risks : cuid, managed {
         descr                    : localized String;
         miti                     : Association to Mitigations;
         impact                   : Integer;
-        // bp : Association to BusinessPartners;
+        bp : Association to BusinessPartners;
         virtual criticality      : Integer;
         virtual PrioCriticality : Integer;
 }

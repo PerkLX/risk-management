@@ -1,12 +1,12 @@
 
 ###
-POST  http://localhost:40437/odata/v4/service/risk/addItem
+POST  http://localhost:4004/odata/v4/service/risk/addItem
 Content-Type: application/json
 
 {
     "title": "test",
     "descr": "qwe",
-    "quantity": 19
+    "quantity": 23
 }
 
 ###

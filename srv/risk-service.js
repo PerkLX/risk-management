@@ -37,7 +37,75 @@ module.exports = cds.service.impl(async function () {
         });
     });
 
-    this.on("addItem", ({ data: { descr, title, quantity } }) => {
+    // connect to remote service
+    const BPsrv = await cds.connect.to("API_BUSINESS_PARTNER");
+    /**
+     * Event-handler for read-events on the BusinessPartners entity.
+     * Each request to the API Business Hub requires the apikey in the header.
+     */
+    this.on("READ", BusinessPartners, async (req) => {
+        // The API Sandbox returns alot of business partners with empty names.
+        // We don't want them in our application
+        req.query.where("LastName <> '' and FirstName <> '' ");
+
+        return await BPsrv.transaction(req).send({
+            query: req.query,
+        });
+    });
+
+    // Risks?$expand=bp (Expand on BusinessPartner)
+    this.on("READ", Risks, async (req, next) => {
+        /*
+         Check whether the request wants an "expand" of the business partner
+         As this is not possible, the risk entity and the business partner entity are in different systems (SAP BTP and S/4 HANA Cloud), 
+         if there is such an expand, remove it
+       */
+        if (!req.query.SELECT.columns) return next();
+
+        const expandIndex = req.query.SELECT.columns.findIndex(
+            ({ expand, ref }) => expand && ref[0] === "bp"
+        );
+
+        if (expandIndex < 0) return next();
+
+        // Remove expand from query
+        req.query.SELECT.columns.splice(expandIndex, 1);
+
+        // Make sure bp_BusinessPartner (ID) will be returned
+        if (
+            !req.query.SELECT.columns.find((column) =>
+                column.ref.find((ref) => ref == "bp_BusinessPartner")
+            )
+        ) {
+            req.query.SELECT.columns.push({ ref: ["bp_BusinessPartner"] });
+        }
+
+        const risks = await next();
+
+        const asArray = (x) => (Array.isArray(x) ? x : [x]);
+
+        // Request all associated BusinessPartners
+        const bpIDs = asArray(risks).map((risk) => risk.bp_BusinessPartner);
+        const busienssPartners = await BPsrv.transaction(req).send({
+            query: SELECT.from(this.entities.BusinessPartners).where({
+                BusinessPartner: bpIDs,
+            }),
+        });
+
+        // Convert in a map for easier lookup
+        const bpMap = {};
+        for (const businessPartner of busienssPartners)
+            bpMap[businessPartner.BusinessPartner] = businessPartner;
+
+        // Add BusinessPartners to result
+        for (const note of asArray(risks)) {
+            note.bp = bpMap[note.bp_BusinessPartner];
+        }
+
+        return risks;
+    });
+
+    this.on("addItem", async ({ data: { descr, title, quantity } }) => {
         cds.db.run(
             INSERT({
                 descr: `${descr}`,
@@ -45,6 +113,8 @@ module.exports = cds.service.impl(async function () {
                 quantity: `${parseInt(quantity)}`,
             }).into(Items)
         );
+        const test = await cds.db.send({ query: SELECT.from(Risks) });
+        console.log(test);
     });
 
     this.on("getByQuantity", (req) => {
@@ -53,7 +123,23 @@ module.exports = cds.service.impl(async function () {
         );
     });
 
-    this.before(["CREATE", "addItem"], (req) => {
+    this.before(["CREATE", "addItem"], async (req) => {
         if (req.data.quantity > 100) req.error(400, "Too much");
+
+        //console.log(test);
+        //const check = await test.transaction(req).send("GET", "/");
+        // test.transaction().read
+        //const check = await test.transaction(req).send("GET", "/");
+        //console.log(check);
+
+        // test.run;
+        // const qwe = await test.send({
+        //     method: "GET",
+        //     path: "/",
+        // });
+
+        // console.log(qwe);
+        // const check = await test.run();
+        // console.log(check);
     });
 });
