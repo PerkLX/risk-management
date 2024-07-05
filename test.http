@@ -1,6 +1,6 @@
 
 ###
-POST  http://localhost:4004/odata/v4/service/risk/addItem
+POST  http://localhost:32935/odata/v4/service/risk/addItem
 Content-Type: application/json
 
 {
@@ -10,5 +10,9 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:40437/odata/v4/service/risk/getByQuantity(quantity=19)
+GET http://localhost:33685/odata/v4/service/risk/getSome()
 Content-Type: application/json
+
+
+###
+GET http://localhost:3000
