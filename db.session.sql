@@ -1,1 +1,1 @@
-select * from riskmanagement_Items;
+select * from riskmanagement_Risks;
