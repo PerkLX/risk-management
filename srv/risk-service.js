@@ -1,5 +1,4 @@
 // Import the cds facade object (https://cap.cloud.sap/docs/node.js/cds-facade)
-const { executeHttpRequest } = require("@sap-cloud-sdk/http-client");
 const cds = require("@sap/cds");
 
 // The service implementation with all service handlers
@@ -39,6 +38,7 @@ module.exports = cds.service.impl(async function () {
     });
 
     const test = await cds.connect.to("TEST");
+    const northwind = await cds.connect.to("Northwind");
     // connect to remote service
     const BPsrv = await cds.connect.to("API_BUSINESS_PARTNER");
     /**
@@ -53,7 +53,7 @@ module.exports = cds.service.impl(async function () {
         return await BPsrv.transaction(req).send({
             query: req.query,
             headers: {
-                "apikey": "DGk9EHxxsj0KkRSfq9LE4Klz7h8vnldu"
+                apikey: process.env.apikey
             }
         });
     });
@@ -96,7 +96,7 @@ module.exports = cds.service.impl(async function () {
                 BusinessPartner: bpIDs,
             }),
             headers: {
-                "apikey": "DGk9EHxxsj0KkRSfq9LE4Klz7h8vnldu"
+                apikey: process.env.apikey
             }
         });
 
@@ -129,31 +129,21 @@ module.exports = cds.service.impl(async function () {
     this.on("getSome", async (req) => {
         const result = await test.get('/stroka');
         console.log(result);
-        // return cds.db.run(
-        //     SELECT("*").from(Items).where({ quantity: req.data.quantity })
-        // );
     });
+
+    this.on("getByQuantity", async (req) => {
+        return cds.db.run(
+            SELECT("*").from(Items).where({ quantity: req.data.quantity })
+        );
+    });
+
+    this.on("getNorthwind", async (req) => {
+        const result = await northwind.get("/Products");
+        console.log(result);
+        return result;
+    })
 
     this.before(["CREATE", "addItem"], async (req) => {
         if (req.data.quantity > 100) req.error(400, "Too much");
-
-        //const check = await test.transaction().send("GET");
-        //console.log(check);
-        // const test = new Request("")
-        //const check = await executeHttpRequest({destinationName: "LocalServ"}, {method: 'GET', url: /string"});
-
-        //console.log(check.data);
-        //console.log(test);
-        //const check = await test.transaction(req).send("GET", "/");
-        // test.transaction().read
-        //const check = await test.transaction(req).send("GET", "/");
-        //console.log(check);
-
-        // test.run;
-        // const qwe = await test.send({
-        //     method: "GET",
-        //     path: "/",
-        // });
-
     });
 });

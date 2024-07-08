@@ -10,9 +10,10 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:33685/odata/v4/service/risk/getSome()
+GET http://localhost:4004/odata/v4/service/risk/getSome()
 Content-Type: application/json
 
 
 ###
-GET http://localhost:3000
+GET http://localhost:4004/odata/v4/service/risk/getNorthwind()
+#Content-Type: application/json
