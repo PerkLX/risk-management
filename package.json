@@ -8,10 +8,13 @@
     "@sap/cds": "7.9.2",
     "@sap/cds-dk": "7.9.2",
     "cross-env": "^7.0.3",
-    "express": "^4"
+    "express": "^4",
+    "@sap/cds-hana": "^2",
+    "@sap/xssec": "^3"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^1.7.1",
+    "@sap/cds-dk": "^7",
     "@sap/ux-specification": "^1.120.13"
   },
   "scripts": {
@@ -70,6 +73,30 @@
         "kind": "sqlite",
         "credentials": {
           "url": "db.sqlite"
+        }
+      },
+      "[production]": {
+        "db": "hana",
+        "auth": "mocked",
+        "users": {
+          "riskviewer": {
+            "password": "initial",
+            "attr": {
+              "email": "risk.viewer@tester.sap.com"
+            },
+            "roles": [
+              "RiskViewer"
+            ]
+          },
+          "riskmanager": {
+            "password": "initial",
+            "attr": {
+              "email": "risk.manager@tester.sap.com"
+            },
+            "roles": [
+              "RiskManager"
+            ]
+          }
         }
       }
     }
