@@ -1,5 +1,5 @@
 {
-  "[hybrid]": {
+  "[development]": {
     "auth": {
       "passport": {
         "strategy": "mock",
