@@ -43,6 +43,7 @@ modules:
           url: ~{srv-url}
           forwardAuthToken: true
       - name: risk-management-auth
+      - name: risk-connectivity
 
   - name: risk-management-db-deployer
     type: hdb
@@ -83,18 +84,6 @@ resources:
   - name: risk-management-destination
     type: org.cloudfoundry.managed-service
     parameters:
-      config:
-        HTML5.DynamicDestination: true
-        WebIDEEnabled: true
-        init_data:
-          instance:
-            destinations:
-              - Authentication: NoAuthentication
-                Name: localserv
-                ProxyType: OnPremise
-                Type: HTTP
-                URL: http://localhost:3000
-            existing_destinations_policy: update
       service: destination
       service-plan: lite
   - name: risk-management-db

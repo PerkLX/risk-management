@@ -1,5 +1,9 @@
 {
   "welcomeFile": "app/webapp/index.html",
+  "logout": {
+    "logoutEndpoint": "/my/logout",
+    "logoutPage": "https://2a4a3b60trial-dev-risk-management.cfapps.us10-001.hana.ondemand.com/app/webapp/index.html"
+  },
   "routes": [
     {
       "source": "^/app/(.*)$",

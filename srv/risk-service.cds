@@ -43,6 +43,7 @@ service RiskService @(requires: 'authenticated-user') {
 
     function getByQuantity(quantity: Integer) returns many Items; 
     action addItem(title: String, descr: String, quantity: Integer);
+    
     function getSome() returns String; 
     function getNorthwind() returns array of String;
 

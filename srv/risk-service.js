@@ -37,8 +37,6 @@ module.exports = cds.service.impl(async function () {
     });
   });
 
-  const test = await cds.connect.to("TEST");
-  const northwind = await cds.connect.to("Northwind");
   // connect to remote service
   const BPsrv = await cds.connect.to("API_BUSINESS_PARTNER");
   /**
@@ -78,9 +76,11 @@ module.exports = cds.service.impl(async function () {
 
     // Make sure bp_BusinessPartner (ID) will be returned
     if (
-      !req.query.SELECT.columns.find((column) =>
-        column.ref.find((ref) => ref == "bp_BusinessPartner")
-      )
+      !req.query.SELECT.columns.find((column) => {
+        if (column.ref) {
+          column.ref.find((ref) => ref == "bp_BusinessPartner");
+        }
+      })
     ) {
       req.query.SELECT.columns.push({ ref: ["bp_BusinessPartner"] });
     }
@@ -125,24 +125,35 @@ module.exports = cds.service.impl(async function () {
     console.log(test);
   });
 
-  this.on("getSome", async (req) => {
-    const result = await test.get("/stroka");
-    console.log(result);
-  });
-
   this.on("getByQuantity", async (req) => {
     return cds.db.run(
       SELECT("*").from(Items).where({ quantity: req.data.quantity })
     );
   });
 
-  this.on("getNorthwind", async (req) => {
-    const result = await northwind.get("/Products");
+  this.before(["CREATE", "addItem"], async (req) => {
+    if (req.data.quantity > 100) req.error(400, "Too much");
+  });
+
+  const test = await cds.connect.to("TEST");
+  const northwind = await cds.connect.to("Northwind");
+
+  this.on("getSome", async (req) => {
+    const result = await test.get("/stroka");
+    // const result = await test.send({
+    //   method: "GET",
+    //   path: "/stroka",
+    //   headers: {
+    //     "SAP-Connectivity-Authentication": "Bearer " + process.env.sapcontoken,
+    //   },
+    // });
     console.log(result);
     return result;
   });
 
-  this.before(["CREATE", "addItem"], async (req) => {
-    if (req.data.quantity > 100) req.error(400, "Too much");
+  this.on("getNorthwind", async (req) => {
+    const result = await northwind.get("Products");
+    console.log(result);
+    return result;
   });
 });
